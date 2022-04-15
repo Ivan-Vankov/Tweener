@@ -1,0 +1,9 @@
+{
+  "name": "vaflov.tweener",
+  "version": "1.0.0",
+  "displayName": "Tweener",
+  "description": "A UniTask-based tweening library.",
+  "dependencies": {
+    "com.cysharp.unitask": "2.2.4"
+  }
+}
