@@ -1,0 +1,16 @@
+{
+    "name": "vaflov.tweener.editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ad66d1268d8eeda4f96a9f54fa8f8f18"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
