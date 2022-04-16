@@ -1,5 +1,5 @@
 {
-  "name": "vaflov.tweener",
+  "name": "com.vaflov.tweener",
   "version": "1.0.0",
   "displayName": "Tweener",
   "description": "A UniTask-based tweening library.",

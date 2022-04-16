@@ -1,8 +1,8 @@
 {
-    "name": "vaflov.tweener",
+    "name": "com.vaflov.tweener.editor",
     "rootNamespace": "",
     "references": [
-        "UniTask"
+        "GUID:f7f9ac6cd8b15ca4c947ed1a48d9cdd8"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
