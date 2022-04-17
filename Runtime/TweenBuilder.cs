@@ -10,7 +10,12 @@ namespace Vaflov {
         PING_PONG,
     }
 
-    public abstract class TweenBuilder<T, TDerived> : CustomYieldInstruction where TDerived : TweenBuilder<T, TDerived> {
+    public interface ITween {
+        public void Stop();
+        public void ForceStop();
+    }
+
+    public abstract class TweenBuilder<T, TDerived> : CustomYieldInstruction, ITween where TDerived : TweenBuilder<T, TDerived> {
         public float delay = 0;
         public float duration = 1;
         public int repeatCount = 1;
@@ -27,7 +32,8 @@ namespace Vaflov {
         public OnCompleteAction OnCompleteAndIsStoppedCallback;
         public Action OnStoppedCallback;
         public bool isStopped = false;
-        public bool syncWithObject = false;
+        public bool isForceStopped = false;
+        public bool syncWithObject = true;
         public bool IsRunning { get; protected set; } = true;
 
         public override bool keepWaiting => IsRunning;
@@ -87,8 +93,8 @@ namespace Vaflov {
             return (TDerived)this;
         }
 
-        public TDerived SyncWithObject() {
-            objLifetimeCancellationToken = animatedComponent.GetCancellationTokenOnDestroy();
+        public TDerived SyncWithObject(bool syncWithObject = true) {
+            this.syncWithObject = syncWithObject;
             return (TDerived)this;
         }
 
@@ -101,6 +107,12 @@ namespace Vaflov {
                 OnCompleteAndIsStoppedCallback?.Invoke(isStopped: true);
                 OnStoppedCallback?.Invoke();
             }
+        }
+
+        public void ForceStop() {
+            cts.Cancel();
+            cts.Dispose();
+            isForceStopped = true;
         }
 
         public TDerived WithCancellation(CancellationToken cancellationToken) {
@@ -117,7 +129,9 @@ namespace Vaflov {
         }
 
         public async UniTask TweenTask() {
+            TweenTracker.AddTween(this);
             await UniTask.NextFrame(cts.Token).SuppressCancellationThrow();
+            if (isForceStopped) { return; }
 
             var extraTokens = externalCancellationToken != CancellationToken.None;
             if (syncWithObject) {
@@ -133,9 +147,11 @@ namespace Vaflov {
                 if (delay > 0) {
                     await UniTask.Delay(TimeSpan.FromSeconds(delay), cancellationToken: cts.Token)
                                  .SuppressCancellationThrow();
+                    if (isForceStopped) { return; }
                 }
                 if (!cts.IsCancellationRequested) {
                     await TweenTaskInner(cts.Token);
+                    if (isForceStopped) { return; }
                 }
             }
             OnCompleteCallback?.Invoke();
@@ -144,6 +160,7 @@ namespace Vaflov {
                 OnStoppedCallback?.Invoke();
             }
             IsRunning = false;
+            TweenTracker.RemoveTweenCTS(this);
         }
 
         public abstract UniTask TweenTaskInner(CancellationToken cancellationToken);

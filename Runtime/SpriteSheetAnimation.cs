@@ -64,8 +64,7 @@ namespace Vaflov {
                                  .SuppressCancellationThrow();
                 }
             }
-
-            if (animatedComponent != null && !stayOnLastFrame) {
+            if (!isForceStopped && !stayOnLastFrame && animatedComponent != null) {
                 frameSetter(null);
             }
         }

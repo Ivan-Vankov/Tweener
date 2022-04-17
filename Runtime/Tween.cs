@@ -232,7 +232,7 @@ namespace Vaflov {
                     ++iteration;
                 }
             }
-            if (animatedComponent != null && resetOnComplete) {
+            if (!isForceStopped && resetOnComplete && animatedComponent != null) {
                 // TODO: Debug loop modes and implement them for SpriteSheetAnimation
                 if (loopMode == TweenLoopMode.CLAMP || loopMode == TweenLoopMode.PING_PONG) {
                     setter((T)Lerp(from, to, easeCurve.Evaluate(easeCurve.durationMultiplier)));

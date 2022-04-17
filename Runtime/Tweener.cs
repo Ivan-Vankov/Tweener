@@ -112,5 +112,44 @@ namespace Vaflov {
         public static Tween<Vector3> Move(Transform toMove, Vector3 toPosition) {
             return Move(toMove, toMove.position, toPosition);
         }
+
+        public static Tween<float> Rotate(Transform toRotate, Vector3 fromEulerAngles, Vector3 toEulerAngles, Space space = Space.Self) {
+            return new Tween<float>(0, 1, progress => {
+                if (space == Space.World) {
+                    toRotate.eulerAngles = fromEulerAngles;
+                } else {
+                    toRotate.localEulerAngles = fromEulerAngles;
+                }
+                var targetEulerAngles = Vector3.LerpUnclamped(fromEulerAngles, toEulerAngles, progress);
+                toRotate.Rotate(targetEulerAngles, space);
+            }).Start(toRotate);
+        }
+
+        public static Tween<float> Rotate(Transform toRotate, Vector3 toEulerAngles, Space space = Space.Self) {
+            return Rotate(toRotate,
+                space == Space.World ? toRotate.eulerAngles : toRotate.localEulerAngles,
+                toEulerAngles,
+                space);
+        }
+
+        public static Tween<float> Rotate(Transform toRotate, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, Space space = Space.Self) {
+            return Rotate(toRotate, new Vector3(fromX, fromY, fromZ), new Vector3(toX, toY, toZ), space);
+        }
+
+        public static Tween<float> Rotate(Transform toRotate, float toX, float toY, float toZ, Space space = Space.Self) {
+            return Rotate(toRotate, new Vector3(toX, toY, toZ), space);
+        }
+
+        public static Tween<float> Rotate(Transform toRotate, Vector3 axis, float angle, Space space = Space.Self) {
+            var initialEulerAngles = space == Space.World ? toRotate.eulerAngles : toRotate.localEulerAngles;
+            return new Tween<float>(0, 1, pct => {
+                if (space == Space.World) {
+                    toRotate.eulerAngles = initialEulerAngles;
+                } else {
+                    toRotate.localEulerAngles = initialEulerAngles;
+                }
+                toRotate.Rotate(axis, pct * angle);
+            }).Start(toRotate);
+        }
     }
 }
