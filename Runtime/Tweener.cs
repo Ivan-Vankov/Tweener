@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace Vaflov {
-    public static class Tweener {
+    public static partial class Tweener {
         public static SpriteSheetAnimation CreateSpriteSheetAnimation(SpriteRenderer renderer, Sprite[] frames) {
             return new SpriteSheetAnimation(frames, renderer.SetSprite).AnimatedComponent(renderer);
         }
