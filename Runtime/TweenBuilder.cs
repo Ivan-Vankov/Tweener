@@ -24,7 +24,7 @@ namespace Vaflov {
         public Action<T> OnValueChangedCallback;
         public Component animatedComponent;
         public UniTask task;
-        public CancellationTokenSource cts = new CancellationTokenSource();
+        public CancellationTokenSource cts;
         public CancellationToken objLifetimeCancellationToken = CancellationToken.None;
         public CancellationToken externalCancellationToken = CancellationToken.None;
         public Action OnCompleteCallback;
@@ -104,11 +104,10 @@ namespace Vaflov {
         }
 
         public void Stop() {
-
+            isStopped = true;
             cts.Cancel();
             cts.Dispose();
             cts = null;
-            isStopped = true;
             if (!IsRunning) {
                 OnCompleteCallback?.Invoke();
                 OnCompleteAndIsStoppedCallback?.Invoke(isStopped: true);
@@ -117,10 +116,10 @@ namespace Vaflov {
         }
 
         public void ForceStop() {
+            isForceStopped = true;
             cts.Cancel();
             cts.Dispose();
             cts = null;
-            isForceStopped = true;
         }
 
         public TDerived WithCancellation(CancellationToken cancellationToken) {
@@ -137,6 +136,10 @@ namespace Vaflov {
 
         public async UniTask TweenTask() {
             TweenTracker.AddTween(this);
+            cts = new CancellationTokenSource();
+            isStopped = false;
+            isForceStopped = false;
+            IsRunning = true;
             await UniTask.NextFrame(cts.Token).SuppressCancellationThrow();
             if (isForceStopped)
                 return;
