@@ -33,7 +33,7 @@ namespace Vaflov {
             return this;
         }
 
-        public async override UniTask TweenTaskInner(CancellationToken cancellationToken) {
+        public async override UniTask DoTweenTask(CancellationToken cancellationToken) {
             int frameIndex = 0;
             float frameDuration = duration / (frames.Length - 1 + lastFrameMultiplier);
             var frameDurationTimeSpan = TimeSpan.FromSeconds(frameDuration);

@@ -98,9 +98,16 @@ namespace Vaflov {
             return (TDerived)this;
         }
 
+        public TDerived AnimatedComponent(Component animatedComponent) {
+            this.animatedComponent = animatedComponent;
+            return (TDerived)this;
+        }
+
         public void Stop() {
+
             cts.Cancel();
             cts.Dispose();
+            cts = null;
             isStopped = true;
             if (!IsRunning) {
                 OnCompleteCallback?.Invoke();
@@ -112,6 +119,7 @@ namespace Vaflov {
         public void ForceStop() {
             cts.Cancel();
             cts.Dispose();
+            cts = null;
             isForceStopped = true;
         }
 
@@ -122,8 +130,7 @@ namespace Vaflov {
 
         public bool IsContinuous() => repeatCount == -1;
 
-        public TDerived Start(Component animatedComponent) {
-            this.animatedComponent = animatedComponent;
+        public TDerived Start() {
             task = TweenTask();
             return (TDerived)this;
         }
@@ -131,10 +138,11 @@ namespace Vaflov {
         public async UniTask TweenTask() {
             TweenTracker.AddTween(this);
             await UniTask.NextFrame(cts.Token).SuppressCancellationThrow();
-            if (isForceStopped) { return; }
+            if (isForceStopped)
+                return;
 
             var extraTokens = externalCancellationToken != CancellationToken.None;
-            if (syncWithObject) {
+            if (syncWithObject && animatedComponent) {
                 objLifetimeCancellationToken = animatedComponent.GetCancellationTokenOnDestroy();
                 extraTokens = true;
             }
@@ -147,23 +155,23 @@ namespace Vaflov {
                 if (delay > 0) {
                     await UniTask.Delay(TimeSpan.FromSeconds(delay), cancellationToken: cts.Token)
                                  .SuppressCancellationThrow();
-                    if (isForceStopped) { return; }
                 }
-                if (!cts.IsCancellationRequested) {
-                    await TweenTaskInner(cts.Token);
-                    if (isForceStopped) { return; }
+                if (!isForceStopped && !cts.IsCancellationRequested) {
+                    await DoTweenTask(cts.Token);
                 }
             }
-            OnCompleteCallback?.Invoke();
-            OnCompleteAndIsStoppedCallback?.Invoke(isStopped);
-            if (isStopped) {
-                OnStoppedCallback?.Invoke();
+            if (!isForceStopped) {
+                OnCompleteCallback?.Invoke();
+                OnCompleteAndIsStoppedCallback?.Invoke(isStopped);
+                if (isStopped) {
+                    OnStoppedCallback?.Invoke();
+                }
             }
             IsRunning = false;
             TweenTracker.RemoveTweenCTS(this);
         }
 
-        public abstract UniTask TweenTaskInner(CancellationToken cancellationToken);
+        public abstract UniTask DoTweenTask(CancellationToken cancellationToken);
 
         public static implicit operator UniTask(TweenBuilder<T, TDerived> tween) => tween.task;
     }

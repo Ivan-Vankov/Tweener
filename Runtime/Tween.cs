@@ -5,7 +5,6 @@ using Cysharp.Threading.Tasks;
 
 namespace Vaflov {
     public class Tween<T> : TweenBuilder<T, Tween<T>> {
-
         public EaseCurve easeCurve = EaseCurve.GetEaseCurve(EaseType.LINEAR);
         public T from;
         public T to;
@@ -19,9 +18,9 @@ namespace Vaflov {
         }
 
         public static object Lerp(object from, object to, float t) {
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             Debug.Assert(from.GetType() == to.GetType(), "<from> and <to> should be the same type");
-#endif
+            #endif
             switch (from) {
                 case float fromV: return Mathf.LerpUnclamped(fromV, (float)to, t);
                 case int fromV: return (int)Mathf.LerpUnclamped(fromV, (int)to, t);
@@ -195,7 +194,7 @@ namespace Vaflov {
             return this;
         }
 
-        public async override UniTask TweenTaskInner(CancellationToken cancellationToken) {
+        public async override UniTask DoTweenTask(CancellationToken cancellationToken) {
             float start = Time.time;
             float end = start + duration;
             float sampleTime = 0;
