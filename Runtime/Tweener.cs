@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.UI;
-using static PlasticGui.PlasticTableColumn;
 
 namespace Vaflov {
     public static class Tweener {
