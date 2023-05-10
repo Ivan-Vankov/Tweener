@@ -254,7 +254,7 @@ namespace Vaflov {
 
         public static void SetLocalScale(this Transform self, Vector3 localScale) {
             if (self)
-                self.localPosition = localScale;
+                self.localScale = localScale;
         }
     }
 
