@@ -105,9 +105,11 @@ namespace Vaflov {
 
         public void Stop() {
             isStopped = true;
-            cts.Cancel();
-            cts.Dispose();
-            cts = null;
+            if (cts != null) {
+                cts.Cancel();
+                cts.Dispose();
+                cts = null;
+            }
             if (!IsRunning) {
                 OnCompleteCallback?.Invoke();
                 OnCompleteAndIsStoppedCallback?.Invoke(isStopped: true);
@@ -117,9 +119,11 @@ namespace Vaflov {
 
         public void ForceStop() {
             isForceStopped = true;
-            cts.Cancel();
-            cts.Dispose();
-            cts = null;
+            if (cts != null) {
+                cts.Cancel();
+                cts.Dispose();
+                cts = null;
+            }
         }
 
         public TDerived WithCancellation(CancellationToken cancellationToken) {
