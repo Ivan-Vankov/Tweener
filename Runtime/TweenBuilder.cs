@@ -154,7 +154,7 @@ namespace Vaflov {
                 extraTokens = true;
             }
             if (extraTokens) {
-                cts.Dispose();
+                cts?.Dispose();
                 cts = CancellationTokenSource.CreateLinkedTokenSource(externalCancellationToken, objLifetimeCancellationToken);
             }
 
